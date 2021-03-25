@@ -8,74 +8,74 @@ import java.util.jar.JarOutputStream;
 
 public class JarOutput extends Output {
 
-    private final JarOutputStream jar;
+  private final JarOutputStream jar;
 
-    public JarOutput(File file) throws IOException {
-        super(file);
-        this.jar = new JarOutputStream(new FileOutputStream(file));
-    }
+  public JarOutput(File file) throws IOException {
+    super(file);
+    this.jar = new JarOutputStream(new FileOutputStream(file));
+  }
 
-    public void write(String fileName, byte[] data) throws IOException {
-        JarEntry entry = new JarEntry(fileName);
+  public void write(String fileName, byte[] data) throws IOException {
+    JarEntry entry = new JarEntry(fileName);
 
-        entry.setTime(0L);
-        entry.setSize((long) data.length);
-        this.jar.putNextEntry(entry);
-        this.jar.write(data);
-        this.jar.closeEntry();
-    }
+    entry.setTime(0L);
+    entry.setSize((long) data.length);
+    this.jar.putNextEntry(entry);
+    this.jar.write(data);
+    this.jar.closeEntry();
+  }
 
-    public void close() throws IOException {
-        this.jar.close();
-    }
+  public void close() throws IOException {
+    this.jar.close();
+  }
 
-    public JarOutputStream getJar() {
-        return this.jar;
-    }
+  public JarOutputStream getJar() {
+    return this.jar;
+  }
 
-    public String toString() {
-        return "JarOutput(jar=" + this.getJar() + ")";
-    }
+  public String toString() {
+    return "JarOutput(jar=" + this.getJar() + ")";
+  }
 
-    public boolean equals(Object o) {
-        if (o == this) {
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    } else if (!(o instanceof JarOutput)) {
+      return false;
+    } else {
+      JarOutput other = (JarOutput) o;
+
+      if (!other.canEqual(this)) {
+        return false;
+      } else if (!super.equals(o)) {
+        return false;
+      } else {
+        JarOutputStream this$jar = this.getJar();
+        JarOutputStream other$jar = other.getJar();
+
+        if (this$jar == null) {
+          if (other$jar == null) {
             return true;
-        } else if (!(o instanceof JarOutput)) {
-            return false;
-        } else {
-            JarOutput other = (JarOutput) o;
-
-            if (!other.canEqual(this)) {
-                return false;
-            } else if (!super.equals(o)) {
-                return false;
-            } else {
-                JarOutputStream this$jar = this.getJar();
-                JarOutputStream other$jar = other.getJar();
-
-                if (this$jar == null) {
-                    if (other$jar == null) {
-                        return true;
-                    }
-                } else if (this$jar.equals(other$jar)) {
-                    return true;
-                }
-
-                return false;
-            }
+          }
+        } else if (this$jar.equals(other$jar)) {
+          return true;
         }
-    }
 
-    protected boolean canEqual(Object other) {
-        return other instanceof JarOutput;
+        return false;
+      }
     }
+  }
 
-    public int hashCode() {
-        boolean PRIME = true;
-        int result = super.hashCode();
-        JarOutputStream $jar = this.getJar();
+  protected boolean canEqual(Object other) {
+    return other instanceof JarOutput;
+  }
 
-        result = result * 59 + ($jar == null ? 43 : $jar.hashCode());
-        return result;
-    }
+  public int hashCode() {
+    boolean PRIME = true;
+    int result = super.hashCode();
+    JarOutputStream $jar = this.getJar();
+
+    result = result * 59 + ($jar == null ? 43 : $jar.hashCode());
+    return result;
+  }
 }

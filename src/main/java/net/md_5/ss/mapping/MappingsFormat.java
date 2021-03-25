@@ -8,25 +8,25 @@ import java.util.Iterator;
 
 public abstract class MappingsFormat {
 
-    protected abstract void load(MappingData mappingdata, String s);
+  protected abstract void load(MappingData mappingdata, String s);
 
-    public final void load(File file, MappingData data) throws IOException {
-        Iterator iterator = Files.readLines(file, Charsets.UTF_8).iterator();
+  public final void load(File file, MappingData data) throws IOException {
+    Iterator iterator = Files.readLines(file, Charsets.UTF_8).iterator();
 
-        while (iterator.hasNext()) {
-            String line = (String) iterator.next();
+    while (iterator.hasNext()) {
+      String line = (String) iterator.next();
 
-            line = line.trim();
-            int commentIndex = line.indexOf(35);
+      line = line.trim();
+      int commentIndex = line.indexOf(35);
 
-            if (commentIndex != -1) {
-                line = line.substring(0, commentIndex);
-            }
+      if (commentIndex != -1) {
+        line = line.substring(0, commentIndex);
+      }
 
-            if (!line.isEmpty()) {
-                this.load(data, line);
-            }
-        }
-
+      if (!line.isEmpty()) {
+        this.load(data, line);
+      }
     }
+
+  }
 }

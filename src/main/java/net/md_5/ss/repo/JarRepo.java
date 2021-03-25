@@ -16,154 +16,154 @@ import org.objectweb.asm.tree.ClassNode;
 
 public class JarRepo extends ClassRepo {
 
-    private final JarFile jar;
+  private final JarFile jar;
 
-    protected ClassInfo getClass0(String internalName) throws IOException {
-        JarEntry entry = this.jar.getJarEntry(internalName + ".class");
+  protected ClassInfo getClass0(String internalName) throws IOException {
+    JarEntry entry = this.jar.getJarEntry(internalName + ".class");
 
-        if (entry != null) {
-            InputStream is = this.jar.getInputStream(entry);
+    if (entry != null) {
+      InputStream is = this.jar.getInputStream(entry);
 
-            ClassInfo classinfo;
+      ClassInfo classinfo;
+
+      try {
+        ClassReader cr = new ClassReader(is);
+        ClassNode node = new ClassNode();
+
+        cr.accept(node, 0);
+        classinfo = new ClassInfo(this, cr, node);
+      } catch (Throwable throwable) {
+        if (is != null) {
+          try {
+            is.close();
+          } catch (Throwable throwable1) {
+            Throwable throwable2 = throwable;
+            Throwable throwable3 = throwable1;
 
             try {
-                ClassReader cr = new ClassReader(is);
-                ClassNode node = new ClassNode();
+              throwable2.addSuppressed(throwable3);
+            } catch (NoSuchMethodError nosuchmethoderror) {
+              ;
+            }
+          }
+        }
 
-                cr.accept(node, 0);
-                classinfo = new ClassInfo(this, cr, node);
-            } catch (Throwable throwable) {
+        throw throwable;
+      }
+
+      if (is != null) {
+        is.close();
+      }
+
+      return classinfo;
+    } else {
+      return null;
+    }
+  }
+
+  public Iterator iterator() {
+    final Enumeration entries = this.jar.entries();
+
+    return new AbstractIterator() {
+      protected ItemInfo computeNext() {
+        if (!entries.hasMoreElements()) {
+          return (ItemInfo) this.endOfData();
+        } else {
+          JarEntry entry = (JarEntry) entries.nextElement();
+          String name = entry.getName();
+
+          if (name.endsWith(".class")) {
+            String internalName = name.substring(0, name.length() - ".class".length());
+
+            return JarRepo.this.getClass(internalName);
+          } else {
+            byte[] data;
+
+            try {
+              InputStream is = JarRepo.this.jar.getInputStream(entry);
+
+              try {
+                data = ByteStreams.toByteArray(is);
+              } catch (Throwable throwable) {
                 if (is != null) {
-                    try {
-                        is.close();
-                    } catch (Throwable throwable1) {
-                        Throwable throwable2 = throwable;
-                        Throwable throwable3 = throwable1;
+                  try {
+                    is.close();
+                  } catch (Throwable throwable1) {
+                    Throwable throwable2 = throwable;
+                    Throwable throwable3 = throwable1;
 
-                        try {
-                            throwable2.addSuppressed(throwable3);
-                        } catch (NoSuchMethodError nosuchmethoderror) {
-                            ;
-                        }
+                    try {
+                      throwable2.addSuppressed(throwable3);
+                    } catch (NoSuchMethodError nosuchmethoderror) {
+                      ;
                     }
+                  }
                 }
 
                 throw throwable;
-            }
+              }
 
-            if (is != null) {
+              if (is != null) {
                 is.close();
+              }
+            } catch (IOException ioexception) {
+              throw new RuntimeException(ioexception);
             }
 
-            return classinfo;
-        } else {
-            return null;
+            return new Resource(entry.getName(), data);
+          }
         }
-    }
+      }
+    };
+  }
 
-    public Iterator iterator() {
-        final Enumeration entries = this.jar.entries();
+  public JarRepo(JarFile jar) {
+    this.jar = jar;
+  }
 
-        return new AbstractIterator() {
-            protected ItemInfo computeNext() {
-                if (!entries.hasMoreElements()) {
-                    return (ItemInfo) this.endOfData();
-                } else {
-                    JarEntry entry = (JarEntry) entries.nextElement();
-                    String name = entry.getName();
+  public JarFile getJar() {
+    return this.jar;
+  }
 
-                    if (name.endsWith(".class")) {
-                        String internalName = name.substring(0, name.length() - ".class".length());
+  public String toString() {
+    return "JarRepo(jar=" + this.getJar() + ")";
+  }
 
-                        return JarRepo.this.getClass(internalName);
-                    } else {
-                        byte[] data;
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    } else if (!(o instanceof JarRepo)) {
+      return false;
+    } else {
+      JarRepo other = (JarRepo) o;
 
-                        try {
-                            InputStream is = JarRepo.this.jar.getInputStream(entry);
+      if (!other.canEqual(this)) {
+        return false;
+      } else {
+        JarFile this$jar = this.getJar();
+        JarFile other$jar = other.getJar();
 
-                            try {
-                                data = ByteStreams.toByteArray(is);
-                            } catch (Throwable throwable) {
-                                if (is != null) {
-                                    try {
-                                        is.close();
-                                    } catch (Throwable throwable1) {
-                                        Throwable throwable2 = throwable;
-                                        Throwable throwable3 = throwable1;
-
-                                        try {
-                                            throwable2.addSuppressed(throwable3);
-                                        } catch (NoSuchMethodError nosuchmethoderror) {
-                                            ;
-                                        }
-                                    }
-                                }
-
-                                throw throwable;
-                            }
-
-                            if (is != null) {
-                                is.close();
-                            }
-                        } catch (IOException ioexception) {
-                            throw new RuntimeException(ioexception);
-                        }
-
-                        return new Resource(entry.getName(), data);
-                    }
-                }
-            }
-        };
-    }
-
-    public JarRepo(JarFile jar) {
-        this.jar = jar;
-    }
-
-    public JarFile getJar() {
-        return this.jar;
-    }
-
-    public String toString() {
-        return "JarRepo(jar=" + this.getJar() + ")";
-    }
-
-    public boolean equals(Object o) {
-        if (o == this) {
+        if (this$jar == null) {
+          if (other$jar == null) {
             return true;
-        } else if (!(o instanceof JarRepo)) {
-            return false;
-        } else {
-            JarRepo other = (JarRepo) o;
-
-            if (!other.canEqual(this)) {
-                return false;
-            } else {
-                JarFile this$jar = this.getJar();
-                JarFile other$jar = other.getJar();
-
-                if (this$jar == null) {
-                    if (other$jar == null) {
-                        return true;
-                    }
-                } else if (this$jar.equals(other$jar)) {
-                    return true;
-                }
-
-                return false;
-            }
+          }
+        } else if (this$jar.equals(other$jar)) {
+          return true;
         }
-    }
 
-    protected boolean canEqual(Object other) {
-        return other instanceof JarRepo;
+        return false;
+      }
     }
+  }
 
-    public int hashCode() {
-        JarFile $jar = this.getJar();
-        int result = 59 + ($jar == null ? 43 : $jar.hashCode());
+  protected boolean canEqual(Object other) {
+    return other instanceof JarRepo;
+  }
 
-        return result;
-    }
+  public int hashCode() {
+    JarFile $jar = this.getJar();
+    int result = 59 + ($jar == null ? 43 : $jar.hashCode());
+
+    return result;
+  }
 }

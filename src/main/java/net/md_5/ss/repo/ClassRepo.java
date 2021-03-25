@@ -7,24 +7,24 @@ import net.md_5.ss.model.ClassInfo;
 
 public abstract class ClassRepo implements Iterable {
 
-    private final Cache cache = CacheBuilder.newBuilder().maximumSize(4096L).build();
+  private final Cache cache = CacheBuilder.newBuilder().maximumSize(4096L).build();
 
-    public final synchronized ClassInfo getClass(String internalName) {
-        ClassInfo info = (ClassInfo) this.cache.getIfPresent(internalName);
+  public final synchronized ClassInfo getClass(String internalName) {
+    ClassInfo info = (ClassInfo) this.cache.getIfPresent(internalName);
 
-        if (info == null) {
-            try {
-                info = this.getClass0(internalName);
-                if (info != null) {
-                    this.cache.put(internalName, info);
-                }
-            } catch (IOException ioexception) {
-                ;
-            }
+    if (info == null) {
+      try {
+        info = this.getClass0(internalName);
+        if (info != null) {
+          this.cache.put(internalName, info);
         }
-
-        return info;
+      } catch (IOException ioexception) {
+        ;
+      }
     }
 
-    protected abstract ClassInfo getClass0(String s) throws IOException;
+    return info;
+  }
+
+  protected abstract ClassInfo getClass0(String s) throws IOException;
 }
