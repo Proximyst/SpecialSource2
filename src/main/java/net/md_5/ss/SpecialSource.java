@@ -31,37 +31,21 @@ public class SpecialSource {
     public static void main(String[] args) throws IOException {
         if (args.length == 0) {
             System.out.println("SpecialSource 2.0: (compare|map) [args]");
-        } else {
-            String[] taskArgs = (String[]) Arrays.copyOfRange(args, 1, args.length);
-            OptionParser help = null;
-            String s = args[0];
-            byte b0 = -1;
+            return;
+        }
 
-            switch (s.hashCode()) {
-                case 107868:
-                    if (s.equals("map")) {
-                        b0 = 1;
-                    }
-                    break;
-                case 950484197:
-                    if (s.equals("compare")) {
-                        b0 = 0;
-                    }
-            }
+        String[] taskArgs = Arrays.copyOfRange(args, 1, args.length);
+        OptionParser help;
+        String s = args[0];
+        byte b0 = -1;
 
-            switch (b0) {
-                case 0:
-                    throw new UnsupportedOperationException();
-                case 1:
-                    help = map(taskArgs);
-                    if (help != null) {
-                        help.printHelpOn((OutputStream) System.err);
-                    }
+        if (!s.equals("map")) {
+            throw new UnsupportedOperationException();
+        }
 
-                    return;
-                default:
-                    throw new UnsupportedOperationException();
-            }
+        help = map(taskArgs);
+        if (help != null) {
+            help.printHelpOn(System.err);
         }
     }
 
