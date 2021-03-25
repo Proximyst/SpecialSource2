@@ -7,7 +7,6 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
 public final class ClassRemapper extends org.objectweb.asm.commons.ClassRemapper {
-
   private final EnhancedRemapper remapper;
 
   public ClassRemapper(ClassVisitor cv, EnhancedRemapper remapper) {
@@ -15,6 +14,7 @@ public final class ClassRemapper extends org.objectweb.asm.commons.ClassRemapper
     this.remapper = remapper;
   }
 
+  @Override
   public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
     FieldVisitor fv = this.cv
         .visitField(access, this.remapper.mapFieldName(this.className, name, desc, access), this.remapper.mapDesc(desc),
@@ -23,6 +23,7 @@ public final class ClassRemapper extends org.objectweb.asm.commons.ClassRemapper
     return fv == null ? null : this.createFieldRemapper(fv);
   }
 
+  @Override
   public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
     signature = this.remapper.mapSignature(signature, false);
     if (signature != null && signature.charAt(0) == '(') {
@@ -39,6 +40,7 @@ public final class ClassRemapper extends org.objectweb.asm.commons.ClassRemapper
     return mv == null ? null : this.createMethodRemapper(mv, access);
   }
 
+  @Override
   protected MethodVisitor createMethodRemapper(MethodVisitor methodVisitor) {
     throw new UnsupportedOperationException("Unspecified flags");
   }
@@ -50,6 +52,7 @@ public final class ClassRemapper extends org.objectweb.asm.commons.ClassRemapper
             : super.createMethodRemapper(methodVisitor));
   }
 
+  @Override
   public void visitInnerClass(String name, String outerName, String innerName, int access) {
     String mappedName = this.remapper.mapType(name);
     String mappedInner = innerName;
@@ -65,6 +68,7 @@ public final class ClassRemapper extends org.objectweb.asm.commons.ClassRemapper
     super.visitInnerClass(mappedName, outerName == null ? null : this.remapper.mapType(outerName), mappedInner, access);
   }
 
+  @Override
   public void visitOuterClass(String owner, String name, String desc) {
     super.visitOuterClass(this.remapper.mapType(owner),
         name == null ? null : this.remapper.mapMethodName(owner, name, desc),

@@ -5,6 +5,7 @@ import com.google.common.collect.UnmodifiableIterator;
 import java.util.Iterator;
 import net.md_5.ss.mapping.MappingData;
 import net.md_5.ss.remapper.EnhancedRemapper;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -23,7 +24,7 @@ public final class SyntheticFinder {
     while (iterator.hasNext()) {
       MethodNode method = (MethodNode) iterator.next();
 
-      if ((method.access & 4096) != 0 && (method.access & 64) == 0 && !method.name.contains("$")) {
+      if ((method.access & Opcodes.ACC_SYNTHETIC) != 0 && (method.access & Opcodes.ACC_BRIDGE) == 0 && !method.name.contains("$")) {
         AbstractInsnNode insn = null;
         UnmodifiableIterator iter = Iterators.filter(method.instructions.iterator(),
             input -> !(input instanceof LabelNode) && !(input instanceof LineNumberNode)

@@ -17,23 +17,22 @@ public class EnhancedMethodRemapper extends MethodRemapper {
   }
 
   public void visitLocalVariable(String name, String descriptor, String signature, Label start, Label end, int index) {
-    switch (this.remapper.getLvtStyle()) {
-      case BASIC:
-        if (Modifier.isStatic(this.methodAccess)) {
-          name = "var" + index;
-        } else {
-          name = index == 0 ? "this" : "var" + (index - 1);
-        }
-
-        super.visitLocalVariable(name, descriptor, signature, start, end, index);
-        return;
-      default:
-        throw new IllegalArgumentException("Cannot map LVT in style " + this.remapper.getLvtStyle());
+    if (this.remapper.getLvtStyle() != LVTStyle.BASIC) {
+      throw new IllegalArgumentException("Cannot map LVT in style " + this.remapper.getLvtStyle());
     }
+
+    if (Modifier.isStatic(this.methodAccess)) {
+      name = "var" + index;
+    } else {
+      name = index == 0 ? "this" : "var" + (index - 1);
+    }
+
+    super.visitLocalVariable(name, descriptor, signature, start, end, index);
+    return;
   }
 
-  public static enum LVTStyle {
-
-    NONE, BASIC;
+  public enum LVTStyle {
+    NONE,
+    BASIC,
   }
 }

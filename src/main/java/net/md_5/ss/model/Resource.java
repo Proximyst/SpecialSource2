@@ -1,6 +1,7 @@
 package net.md_5.ss.model;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class Resource implements ItemInfo {
 
@@ -20,42 +21,23 @@ public class Resource implements ItemInfo {
     return this.data;
   }
 
-  public boolean equals(Object o) {
-    if (o == this) {
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
       return true;
-    } else if (!(o instanceof Resource)) {
-      return false;
-    } else {
-      Resource other = (Resource) o;
-
-      if (!other.canEqual(this)) {
-        return false;
-      } else {
-        String this$path = this.getPath();
-        String other$path = other.getPath();
-
-        if (this$path == null) {
-          if (other$path == null) {
-            return Arrays.equals(this.getData(), other.getData());
-          }
-        } else if (this$path.equals(other$path)) {
-          return Arrays.equals(this.getData(), other.getData());
-        }
-
-        return false;
-      }
     }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final Resource resource = (Resource) o;
+    return Objects.equals(getPath(), resource.getPath())
+        && Arrays.equals(getData(), resource.getData());
   }
 
-  protected boolean canEqual(Object other) {
-    return other instanceof Resource;
-  }
-
+  @Override
   public int hashCode() {
-    String $path = this.getPath();
-    int result = 59 + ($path == null ? 43 : $path.hashCode());
-
-    result = result * 59 + Arrays.hashCode(this.getData());
+    int result = Objects.hash(getPath());
+    result = 31 * result + Arrays.hashCode(getData());
     return result;
   }
 

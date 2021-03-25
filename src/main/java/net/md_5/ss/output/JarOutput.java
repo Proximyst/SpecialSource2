@@ -7,7 +7,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
 public class JarOutput extends Output {
-
   private final JarOutputStream jar;
 
   public JarOutput(File file) throws IOException {

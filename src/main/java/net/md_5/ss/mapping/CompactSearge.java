@@ -1,18 +1,21 @@
 package net.md_5.ss.mapping;
 
+import java.util.regex.Pattern;
+
 public class CompactSearge extends MappingsFormat {
+  private static final Pattern WHITESPACE = Pattern.compile("\\s+");
 
   public void load(MappingData data, String line) {
-    String[] split = line.split(" ");
+    String[] split = WHITESPACE.split(line);
 
     switch (split.length) {
       case 2:
         String from = split[0];
 
         if (from.endsWith("/")) {
-          data.addPackageMap(split[0], split[1]);
+          data.addPackageMap(from, split[1]);
         } else {
-          data.addClassMap(split[0], split[1]);
+          data.addClassMap(from, split[1]);
         }
         break;
       case 3:
@@ -24,6 +27,5 @@ public class CompactSearge extends MappingsFormat {
       default:
         throw new IllegalArgumentException("Unknown line: " + line);
     }
-
   }
 }

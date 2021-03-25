@@ -1,24 +1,23 @@
 package net.md_5.ss.repo;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
 import net.md_5.ss.model.ClassInfo;
+import net.md_5.ss.model.ItemInfo;
 
 public class AggregateRepo extends ClassRepo {
-
-  private final ClassRepo[] children;
+  private final List<ClassRepo> children;
 
   public AggregateRepo(ClassRepo... children) {
-    this.children = children;
+    this.children = ImmutableList.copyOf(children);
   }
 
+  @Override
   public ClassInfo getClass0(String internalName) {
-    ClassRepo[] aclassrepo = this.children;
-    int i = aclassrepo.length;
-
-    for (int j = 0; j < i; ++j) {
-      ClassRepo child = aclassrepo[j];
+    for (ClassRepo child : this.children) {
       ClassInfo found = child.getClass(internalName);
 
       if (found != null) {
@@ -30,37 +29,30 @@ public class AggregateRepo extends ClassRepo {
     return null;
   }
 
-  public Iterator iterator() {
-    return Iterables.concat((Iterable[]) this.children).iterator();
+  @Override
+  public Iterator<ItemInfo> iterator() {
+    return Iterables.concat(this.children).iterator();
   }
 
-  public ClassRepo[] getChildren() {
-    return this.children;
-  }
-
+  @Override
   public String toString() {
-    return "AggregateRepo(children=" + Arrays.deepToString(this.getChildren()) + ")";
+    return "AggregateRepo(children=" + this.children + ")";
   }
 
-  public boolean equals(Object o) {
-    if (o == this) {
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
       return true;
-    } else if (!(o instanceof AggregateRepo)) {
-      return false;
-    } else {
-      AggregateRepo other = (AggregateRepo) o;
-
-      return !other.canEqual(this) ? false : Arrays.deepEquals(this.getChildren(), other.getChildren());
     }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final AggregateRepo that = (AggregateRepo) o;
+    return Objects.equals(children, that.children);
   }
 
-  protected boolean canEqual(Object other) {
-    return other instanceof AggregateRepo;
-  }
-
+  @Override
   public int hashCode() {
-    int result = 59 + Arrays.deepHashCode(this.getChildren());
-
-    return result;
+    return Objects.hash(children);
   }
 }

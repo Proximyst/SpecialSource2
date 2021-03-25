@@ -1,7 +1,8 @@
 package net.md_5.ss.model;
 
-public class GenericInfo {
+import java.util.Objects;
 
+public class GenericInfo {
   private final ClassInfo owner;
   private final String name;
   private final String desc;
@@ -30,80 +31,24 @@ public class GenericInfo {
     return this.access;
   }
 
-  public boolean equals(Object o) {
-    if (o == this) {
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
       return true;
-    } else if (!(o instanceof GenericInfo)) {
-      return false;
-    } else {
-      GenericInfo other = (GenericInfo) o;
-
-      if (!other.canEqual(this)) {
-        return false;
-      } else {
-        label51:
-        {
-          ClassInfo this$owner = this.getOwner();
-          ClassInfo other$owner = other.getOwner();
-
-          if (this$owner == null) {
-            if (other$owner == null) {
-              break label51;
-            }
-          } else if (this$owner.equals(other$owner)) {
-            break label51;
-          }
-
-          return false;
-        }
-
-        label44:
-        {
-          String this$name = this.getName();
-          String other$name = other.getName();
-
-          if (this$name == null) {
-            if (other$name == null) {
-              break label44;
-            }
-          } else if (this$name.equals(other$name)) {
-            break label44;
-          }
-
-          return false;
-        }
-
-        String this$desc = this.getDesc();
-        String other$desc = other.getDesc();
-
-        if (this$desc == null) {
-          if (other$desc == null) {
-            return this.getAccess() == other.getAccess();
-          }
-        } else if (this$desc.equals(other$desc)) {
-          return this.getAccess() == other.getAccess();
-        }
-
-        return false;
-      }
     }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final GenericInfo that = (GenericInfo) o;
+    return getAccess() == that.getAccess()
+        && Objects.equals(getOwner(), that.getOwner())
+        && Objects.equals(getName(), that.getName())
+        && Objects.equals(getDesc(), that.getDesc());
   }
 
-  protected boolean canEqual(Object other) {
-    return other instanceof GenericInfo;
-  }
-
+  @Override
   public int hashCode() {
-    ClassInfo $owner = this.getOwner();
-    int result = 59 + ($owner == null ? 43 : $owner.hashCode());
-    String $name = this.getName();
-
-    result = result * 59 + ($name == null ? 43 : $name.hashCode());
-    String $desc = this.getDesc();
-
-    result = result * 59 + ($desc == null ? 43 : $desc.hashCode());
-    result = result * 59 + this.getAccess();
-    return result;
+    return Objects.hash(getOwner(), getName(), getDesc(), getAccess());
   }
 
   public String toString() {

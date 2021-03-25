@@ -1,17 +1,16 @@
 package net.md_5.ss.output;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
-public abstract class Output {
-
+public abstract class Output implements Closeable, AutoCloseable {
   private final File file;
 
-  public abstract void write(String s, byte[] abyte) throws IOException;
+  public abstract void write(String fileName, byte[] data) throws IOException;
 
-  public abstract void close() throws IOException;
-
-  public Output(File file) {
+  protected Output(File file) {
     this.file = file;
   }
 
@@ -19,44 +18,24 @@ public abstract class Output {
     return this.file;
   }
 
-  public boolean equals(Object o) {
-    if (o == this) {
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
       return true;
-    } else if (!(o instanceof Output)) {
-      return false;
-    } else {
-      Output other = (Output) o;
-
-      if (!other.canEqual(this)) {
-        return false;
-      } else {
-        File this$file = this.getFile();
-        File other$file = other.getFile();
-
-        if (this$file == null) {
-          if (other$file == null) {
-            return true;
-          }
-        } else if (this$file.equals(other$file)) {
-          return true;
-        }
-
-        return false;
-      }
     }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    final Output output = (Output) o;
+    return Objects.equals(getFile(), output.getFile());
   }
 
-  protected boolean canEqual(Object other) {
-    return other instanceof Output;
-  }
-
+  @Override
   public int hashCode() {
-    File $file = this.getFile();
-    int result = 59 + ($file == null ? 43 : $file.hashCode());
-
-    return result;
+    return Objects.hash(getFile());
   }
 
+  @Override
   public String toString() {
     return "Output(file=" + this.getFile() + ")";
   }

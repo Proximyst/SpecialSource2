@@ -5,11 +5,11 @@ import java.io.File;
 import java.io.IOException;
 
 public class FolderOutput extends Output {
-
   public FolderOutput(File file) {
     super(file);
   }
 
+  @Override
   public void write(String fileName, byte[] data) throws IOException {
     File outFile = new File(this.getFile(), fileName);
 
@@ -17,32 +17,22 @@ public class FolderOutput extends Output {
     Files.write(data, outFile);
   }
 
-  public void close() throws IOException {
+  @Override
+  public void close() {
   }
 
+  @Override
   public String toString() {
     return "FolderOutput()";
   }
 
-  public boolean equals(Object o) {
-    if (o == this) {
-      return true;
-    } else if (!(o instanceof FolderOutput)) {
-      return false;
-    } else {
-      FolderOutput other = (FolderOutput) o;
-
-      return !other.canEqual(this) ? false : super.equals(o);
-    }
+  @Override
+  public boolean equals(final Object o) {
+    return o instanceof FolderOutput && super.equals(o);
   }
 
-  protected boolean canEqual(Object other) {
-    return other instanceof FolderOutput;
-  }
-
+  @Override
   public int hashCode() {
-    int result = super.hashCode();
-
-    return result;
+    return 31 * super.hashCode() + 7;
   }
 }
