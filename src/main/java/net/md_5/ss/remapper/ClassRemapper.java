@@ -8,10 +8,18 @@ import org.objectweb.asm.Type;
 
 public final class ClassRemapper extends org.objectweb.asm.commons.ClassRemapper {
   private final EnhancedRemapper remapper;
+  private boolean isEnum;
 
   public ClassRemapper(ClassVisitor cv, EnhancedRemapper remapper) {
     super(cv, remapper);
     this.remapper = remapper;
+  }
+
+  @Override
+  public void visit(final int version, final int access, final String name, final String signature,
+      final String superName, final String[] interfaces) {
+    this.isEnum = superName.equals("java/lang/Enum");
+    super.visit(version, access, name, signature, superName, interfaces);
   }
 
   @Override
@@ -37,7 +45,7 @@ public final class ClassRemapper extends org.objectweb.asm.commons.ClassRemapper
     MethodVisitor mv = this.cv.visitMethod(access, this.remapper.mapMethodName(this.className, name, desc, access),
         this.remapper.mapMethodDesc(desc), signature, exceptions == null ? null : this.remapper.mapTypes(exceptions));
 
-    return mv == null ? null : this.createMethodRemapper(mv, access);
+    return mv == null ? null : this.createMethodRemapper(mv, name, access);
   }
 
   @Override
@@ -45,11 +53,10 @@ public final class ClassRemapper extends org.objectweb.asm.commons.ClassRemapper
     throw new UnsupportedOperationException("Unspecified flags");
   }
 
-  private MethodVisitor createMethodRemapper(MethodVisitor methodVisitor, int access) {
-    return (MethodVisitor) (
-        this.remapper.getLvtStyle() != null && this.remapper.getLvtStyle() != EnhancedMethodRemapper.LVTStyle.NONE
-            ? new EnhancedMethodRemapper(methodVisitor, this.remapper, access)
-            : super.createMethodRemapper(methodVisitor));
+  private MethodVisitor createMethodRemapper(MethodVisitor methodVisitor, String name, int access) {
+    return this.remapper.getLvtStyle() != null && this.remapper.getLvtStyle() != EnhancedMethodRemapper.LVTStyle.NONE
+        ? new EnhancedMethodRemapper(methodVisitor, this.remapper, access, this.isEnum && name.equals("<init>"))
+        : super.createMethodRemapper(methodVisitor);
   }
 
   @Override

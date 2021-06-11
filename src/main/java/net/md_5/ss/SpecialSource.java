@@ -75,6 +75,7 @@ public class SpecialSource {
 
         switch (extension) {
           case "prg":
+          case "txt":
             new Proguard().load(file, mappingData);
             break;
           case "csrg":
@@ -118,10 +119,10 @@ public class SpecialSource {
 
             switch (handle) {
               case REMAP:
-                out.write(remapper.map(c.getName()) + ".class", c.remap(remapper));
+                out.write(c.getVersionBase() + remapper.map(c.getName()) + ".class", c.remap(remapper));
                 break;
               case INCLUDE:
-                out.write(c.getName() + ".class", c.toByteArray());
+                out.write(c.getVersionBase() + c.getName() + ".class", c.toByteArray());
                 break;
               case EXCLUDE:
                 // No-op

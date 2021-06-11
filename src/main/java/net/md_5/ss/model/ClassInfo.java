@@ -18,12 +18,14 @@ import org.objectweb.asm.tree.MethodNode;
 public class ClassInfo implements ItemInfo {
   private final Map<String, MethodInfo> methodCache = new HashMap<>();
   private final Map<String, FieldInfo> fieldCache = new HashMap<>();
+  private final String versionBase;
 
   private ClassRepo repo;
   private ClassReader reader;
   private ClassNode node;
 
-  public ClassInfo(ClassRepo repo, ClassReader reader, ClassNode node) {
+  public ClassInfo(final String versionBase, ClassRepo repo, ClassReader reader, ClassNode node) {
+    this.versionBase = versionBase;
     this.repo = repo;
     this.reader = reader;
     this.node = node;
@@ -69,6 +71,10 @@ public class ClassInfo implements ItemInfo {
     }
 
     return info;
+  }
+
+  public String getVersionBase() {
+    return this.versionBase;
   }
 
   public String getName() {
@@ -143,16 +149,18 @@ public class ClassInfo implements ItemInfo {
         && Objects.equals(this.getReader(), other.getReader())
         && Objects.equals(this.getNode(), other.getNode())
         && Objects.equals(this.getMethodCache(), other.getMethodCache())
-        && Objects.equals(this.getFieldCache(), other.getFieldCache());
+        && Objects.equals(this.getFieldCache(), other.getFieldCache())
+        && Objects.equals(this.getVersionBase(), other.getVersionBase());
   }
 
   public int hashCode() {
     return Objects.hash(this.getRepo(), this.getReader(), this.getNode(),
-        this.getMethodCache(), this.getFieldCache());
+        this.getMethodCache(), this.getFieldCache(), this.getVersionBase());
   }
 
   public String toString() {
     return "ClassInfo(repo=" + this.getRepo() + ", reader=" + this.getReader() + ", node=" + this.getNode()
-        + ", methodCache=" + this.getMethodCache() + ", fieldCache=" + this.getFieldCache() + ")";
+        + ", methodCache=" + this.getMethodCache() + ", fieldCache=" + this.getFieldCache()
+        + ", versionBase=" + this.getVersionBase() + ")";
   }
 }

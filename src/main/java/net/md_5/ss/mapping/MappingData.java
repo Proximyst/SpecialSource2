@@ -7,6 +7,7 @@ import net.md_5.ss.util.AccessTrackingMap;
 public class MappingData {
   private final AccessTrackingMap<String, String> packageMaps = new AccessTrackingMap<>();
   private final AccessTrackingMap<String, String> classMaps = new AccessTrackingMap<>();
+  private final AccessTrackingMap<String, String> classMapsInverse = new AccessTrackingMap<>();
   private final AccessTrackingMap<String, String> methodMaps = new AccessTrackingMap<>();
   private final AccessTrackingMap<String, String> fieldMaps = new AccessTrackingMap<>();
 
@@ -20,10 +21,15 @@ public class MappingData {
 
   public void addClassMap(String from, String to) {
     this.classMaps.put(from, to);
+    this.classMapsInverse.put(to, from);
   }
 
   public String getClassMap(String from) {
     return this.classMaps.get(from);
+  }
+
+  public String getClassMapInverse(String to) {
+    return this.classMapsInverse.get(to);
   }
 
   public void addMethodMap(String fromOwner, String fromName, String fromDesc, String newName) {
@@ -71,6 +77,10 @@ public class MappingData {
     return this.classMaps;
   }
 
+  public AccessTrackingMap<String, String> getClassMapsInverse() {
+    return this.classMapsInverse;
+  }
+
   public AccessTrackingMap<String, String> getMethodMaps() {
     return this.methodMaps;
   }
@@ -90,18 +100,24 @@ public class MappingData {
     final MappingData that = (MappingData) o;
     return Objects.equals(this.getPackageMaps(), that.getPackageMaps())
         && Objects.equals(this.getClassMaps(), that.getClassMaps())
+        && Objects.equals(this.getClassMapsInverse(), that.getClassMapsInverse())
         && Objects.equals(this.getMethodMaps(), that.getMethodMaps())
         && Objects.equals(this.getFieldMaps(), that.getFieldMaps());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.getPackageMaps(), this.getClassMaps(), this.getMethodMaps(), this.getFieldMaps());
+    return Objects.hash(this.getPackageMaps(), this.getClassMaps(), this.getClassMapsInverse(), this.getMethodMaps(),
+        this.getFieldMaps());
   }
 
   @Override
   public String toString() {
-    return "MappingData(packageMaps=" + this.getPackageMaps() + ", classMaps=" + this.getClassMaps() + ", methodMaps="
-        + this.getMethodMaps() + ", fieldMaps=" + this.getFieldMaps() + ")";
+    return "MappingData(packageMaps=" + this.getPackageMaps()
+        + ", classMaps=" + this.getClassMaps()
+        + ", classMapsInverse=" + this.getClassMapsInverse()
+        + ", methodMaps=" + this.getMethodMaps()
+        + ", fieldMaps=" + this.getFieldMaps()
+        + ")";
   }
 }

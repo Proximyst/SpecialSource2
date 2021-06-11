@@ -18,6 +18,15 @@ public class JarRepo extends ClassRepo {
   private final JarFile jar;
 
   protected ClassInfo getClass0(String internalName) throws IOException {
+    final String versionBase;
+    if (internalName.startsWith("META-INF/versions/")) {
+      // TODO(Mariell Hoversholm): Simplify...
+      final String[] split = internalName.split("/", 4);
+      versionBase = split[0] + "/" + split[1] + "/" + split[2] + "/";
+    } else {
+      versionBase = "";
+    }
+
     JarEntry entry = this.jar.getJarEntry(internalName + ".class");
     if (entry == null) {
       return null;
@@ -29,7 +38,7 @@ public class JarRepo extends ClassRepo {
       ClassNode node = new ClassNode();
 
       cr.accept(node, 0);
-      classinfo = new ClassInfo(this, cr, node);
+      classinfo = new ClassInfo(versionBase, this, cr, node);
     }
 
     return classinfo;

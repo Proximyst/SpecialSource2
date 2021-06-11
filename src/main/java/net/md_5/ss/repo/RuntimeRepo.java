@@ -16,7 +16,7 @@ public class RuntimeRepo extends ClassRepo {
     ClassNode node = new ClassNode();
 
     cr.accept(node, 0);
-    return new ClassInfo(this, cr, node);
+    return new ClassInfo("", this, cr, node);
   }
 
   @Override
