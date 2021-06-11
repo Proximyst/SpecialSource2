@@ -6,6 +6,7 @@ plugins {
     `maven-publish`
     application
     id("com.github.johnrengelman.shadow") version "6.1.0"
+    id("org.checkerframework") version "0.5.21"
 }
 
 group = "net.md_5"
